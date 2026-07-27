@@ -19,16 +19,30 @@ import {
 } from "lucide-react";
 import { EchoMindIcon } from "@/components/echomind-icon";
 import { useEcho } from "@/lib/store";
+import { useEffect, useState } from "react";
 
 function StarField() {
-  const stars = Array.from({ length: 80 }).map((_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 2 + 0.5,
-    delay: Math.random() * 6,
-    duration: 3 + Math.random() * 4,
-  }));
+  const [stars, setStars] = useState<Array<{
+    id: number;
+    x: number;
+    y: number;
+    size: number;
+    delay: number;
+    duration: number;
+  }>>([]);
+
+  useEffect(() => {
+    setStars(
+      Array.from({ length: 80 }).map((_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 2 + 0.5,
+        delay: Math.random() * 6,
+        duration: 3 + Math.random() * 4,
+      }))
+    );
+  }, []);
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {stars.map((s) => (
