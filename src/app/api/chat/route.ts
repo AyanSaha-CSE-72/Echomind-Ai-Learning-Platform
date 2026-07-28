@@ -29,7 +29,15 @@ FORMAT: Use markdown for structure. Keep responses concise but complete.`;
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages, apiKey, provider, model } = await req.json();
+    // Parse request body with timeout protection
+    let body: any;
+    try {
+      body = await req.json();
+    } catch (parseError) {
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
+
+    const { messages, apiKey, provider, model } = body;
 
     if (!apiKey || !provider) {
       return NextResponse.json({ error: "Missing API key or provider" }, { status: 400 });
@@ -37,14 +45,40 @@ export async function POST(req: NextRequest) {
 
     let response: string;
 
-    if (provider === "openai") {
-      response = await callOpenAI(apiKey, messages, model || "gpt-4o-mini");
-    } else if (provider === "anthropic") {
-      response = await callAnthropic(apiKey, messages, model || "claude-3-5-sonnet-20241022");
-    } else if (provider === "gemini") {
-      response = await callGemini(apiKey, messages, model || "gemini-2.5-flash");
-    } else {
-      return NextResponse.json({ error: "Unknown provider" }, { status: 400 });
+    // Add timeout to API calls
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error("AI response timeout")), 30000); // 30 second timeout
+    });
+
+    try {
+      if (provider === "openai") {
+        response = (await Promise.race([
+          callOpenAI(apiKey, messages, model || "gpt-4o-mini"),
+          timeoutPromise,
+        ])) as string;
+      } else if (provider === "anthropic") {
+        response = (await Promise.race([
+          callAnthropic(apiKey, messages, model || "claude-3-5-sonnet-20241022"),
+          timeoutPromise,
+        ])) as string;
+      } else if (provider === "gemini") {
+        response = (await Promise.race([
+          callGemini(apiKey, messages, model || "gemini-2.5-flash"),
+          timeoutPromise,
+        ])) as string;
+      } else {
+        return NextResponse.json({ error: "Unknown provider" }, { status: 400 });
+      }
+    } catch (apiError: any) {
+      if (apiError.message === "AI response timeout") {
+        return NextResponse.json({ error: "The AI service took too long to respond. Please try again." }, { status: 500 });
+      }
+      throw apiError; // Re-throw for outer catch block
+    }
+
+    // Validate response
+    if (!response || typeof response !== 'string') {
+      return NextResponse.json({ error: "AI returned an invalid response" }, { status: 500 });
     }
 
     return NextResponse.json({ content: response });
@@ -65,6 +99,8 @@ export async function POST(req: NextRequest) {
     } else if (userMessage.includes("billing") || userMessage.includes("payment")) {
       userMessage =
         "This provider requires billing info. Try a free-tier model instead (e.g., Gemini Flash).";
+    } else if (userMessage.includes("503") || userMessage.includes("high demand")) {
+      userMessage = "The AI service is experiencing high demand. Please try again in a moment.";
     }
 
     return NextResponse.json({ error: userMessage }, { status: 500 });
@@ -96,7 +132,6 @@ async function callOpenAI(apiKey: string, messages: any[], model: string): Promi
 }
 
 async function callAnthropic(apiKey: string, messages: any[], model: string): Promise<string> {
-  // Anthropic requires a different message format
   const anthropicMessages = messages.map((m) => ({
     role: m.role,
     content: m.content,
@@ -127,7 +162,6 @@ async function callAnthropic(apiKey: string, messages: any[], model: string): Pr
 }
 
 async function callGemini(apiKey: string, messages: any[], model: string): Promise<string> {
-  // Convert to Gemini format
   const contents = messages.map((m) => ({
     role: m.role === "assistant" ? "model" : "user",
     parts: [{ text: m.content }],

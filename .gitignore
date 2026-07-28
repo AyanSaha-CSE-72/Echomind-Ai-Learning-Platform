@@ -1,1 +1,14 @@
 node_modules
+.vercel
+
+.next/
+node_modules/
+.env*
+build/
+dist/
+
+.next/
+node_modules/
+.env*
+build/
+dist/

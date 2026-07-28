@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -47,6 +48,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   const setTheme = useEcho((s) => s.setTheme);
   const profile = useEcho((s) => s.profile);
   const level = selectLevel();
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch by only rendering dynamic content after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="min-h-screen relative">
@@ -134,12 +141,14 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <div className="text-xs text-ink-400">
                     Level {level.level} · {profile.displayName}
                   </div>
-                  <div className="h-1.5 rounded-full bg-white/5 mt-1 overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-violet-400 to-fuchsia-400"
-                      style={{ width: `${level.progress * 100}%` }}
-                    />
-                  </div>
+                  {mounted && (
+                    <div className="h-1.5 rounded-full bg-white/5 mt-1 overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-violet-400 to-fuchsia-400"
+                        style={{ width: `${level.progress * 100}%` }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
