@@ -1,4 +1,4 @@
-export function EchoMindIcon({ className, size = 24 }: { className?: string; size?: number }) {
+export function SecondBrainIcon({ className, size = 24 }: { className?: string; size?: number }) {
   return (
     <svg
       width={size}
@@ -46,7 +46,7 @@ export function EchoMindIcon({ className, size = 24 }: { className?: string; siz
 }
 
 /** Compact version for nav/tabs */
-export function EchoMark({ className }: { className?: string }) {
+export function SecondMark({ className }: { className?: string }) {
   return (
     <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
       <defs>
@@ -67,7 +67,7 @@ export function EchoMark({ className }: { className?: string }) {
 }
 
 /** Tiny favicon version */
-export function EchoFavicon() {
+export function SecondFavicon() {
   return (
     <svg width="48" height="48" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
       <defs>

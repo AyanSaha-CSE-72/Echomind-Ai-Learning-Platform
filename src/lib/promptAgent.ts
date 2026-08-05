@@ -1,5 +1,5 @@
 /**
- * Prompt Agent for EchoMind
+ * Prompt Agent for SecondBrain
  * 
  * Generates subject-specific system prompts with strict guardrails
  * to prevent context bleeding between different subjects.
@@ -82,7 +82,7 @@ FINAL REMINDER: You are locked to "${title}". Any answer must be framed within t
  * Used when no specific subject is selected
  */
 export function generateDefaultSystemPrompt(): string {
-  return `You are Echo, a Socratic AI mentor for EchoMind — the world's most intelligent cognitive learning companion.
+  return `You are Echo, a Socratic AI mentor for SecondBrain — the world's most intelligent cognitive learning companion.
 
 CORE PRINCIPLES:
 1. NEVER give direct answers. Guide through questions.

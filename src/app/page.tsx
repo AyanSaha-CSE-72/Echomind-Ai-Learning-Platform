@@ -17,7 +17,7 @@ import {
   Star,
   Quote,
 } from "lucide-react";
-import { EchoMindIcon } from "@/components/echomind-icon";
+import { SecondBrainIcon } from "@/components/secondbrain-icon";
 import { useEcho } from "@/lib/store";
 import { useEffect, useState } from "react";
 
@@ -80,10 +80,10 @@ export default function LandingPage() {
       <header className="relative z-20 flex items-center justify-between px-6 md:px-12 py-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-cyan-400 flex items-center justify-center animate-glow">
-            <EchoMindIcon size={22} />
+            <SecondBrainIcon size={22} />
           </div>
           <div>
-            <div className="font-semibold text-[15px] leading-none">EchoMind</div>
+            <div className="font-semibold text-[15px] leading-none">SecondBrain</div>
             <div className="text-[11px] text-ink-400 mt-1">Knowledge that talks back</div>
           </div>
         </div>
@@ -104,7 +104,7 @@ export default function LandingPage() {
             href="/dashboard"
             className="group relative inline-flex items-center gap-2 rounded-xl bg-white text-ink-900 px-5 py-2.5 text-sm font-medium hover:scale-105 transition-transform"
           >
-            Enter EchoMind
+            Enter SecondBrain
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
@@ -141,7 +141,7 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="max-w-2xl mx-auto mt-8 text-ink-300 text-lg md:text-xl leading-relaxed"
           >
-            EchoMind is not another AI tutor. It's a lifelong cognitive companion that builds a
+            SecondBrain is not another AI tutor. It's a lifelong cognitive companion that builds a
             living model of your mind — predicting what you'll forget, guiding how you'll learn,
             and evolving with you for years.
           </motion.p>
@@ -384,7 +384,7 @@ export default function LandingPage() {
               of learning.
             </h2>
             <p className="mt-6 text-ink-300 max-w-2xl mx-auto text-lg">
-              Traditional AI tutors answer. EchoMind observes, predicts, challenges, and evolves.
+              Traditional AI tutors answer. SecondBrain observes, predicts, challenges, and evolves.
             </p>
           </div>
 
@@ -408,7 +408,7 @@ export default function LandingPage() {
               {
                 n: "04",
                 title: "Evolves",
-                desc: "Your EchoMind grows with you. What it knows of you today is the foundation for tomorrow.",
+                desc: "Your SecondBrain grows with you. What it knows of you today is the foundation for tomorrow.",
               },
             ].map((step, i) => (
               <motion.div
@@ -446,7 +446,7 @@ export default function LandingPage() {
                 Forgetting is a feature. We measure it.
               </h2>
               <p className="text-ink-300 leading-relaxed mb-6">
-                EchoMind implements the Ebbinghaus forgetting curve at the level of individual
+                SecondBrain implements the Ebbinghaus forgetting curve at the level of individual
                 concepts. Every fact you learn has a stability score — a number predicting when
                 you'll forget it. Revision happens exactly when it's needed, not a moment before.
               </p>
@@ -547,7 +547,7 @@ export default function LandingPage() {
                 avatar: "🧑‍🎓",
               },
               {
-                quote: "I used to re-watch the same lecture 4 times. Now EchoMind schedules my revision before I even feel fuzzy.",
+                quote: "I used to re-watch the same lecture 4 times. Now SecondBrain schedules my revision before I even feel fuzzy.",
                 name: "Marcus T.",
                 role: "Medical resident",
                 avatar: "🧑‍⚕️",
@@ -602,7 +602,7 @@ export default function LandingPage() {
             className="group inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 px-8 py-4 font-medium hover:scale-105 transition-transform shadow-2xl shadow-violet-500/30"
           >
             <Rocket className="w-4 h-4" />
-            Begin your EchoMind
+            Begin your SecondBrain
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
@@ -610,7 +610,7 @@ export default function LandingPage() {
 
       <footer className="relative z-10 px-6 md:px-12 py-12 border-t border-white/5">
         <div className="max-w-6xl mx-auto flex items-center justify-between text-xs text-ink-400">
-          <div>© EchoMind · Knowledge that talks back</div>
+          <div>© SecondBrain · Knowledge that talks back</div>
           <div className="flex gap-6">
             <a href="#" className="hover:text-white">Privacy</a>
             <a href="#" className="hover:text-white">Terms</a>

@@ -1,5 +1,5 @@
 /**
- * Cognitive modeling engine for EchoMind.
+ * Cognitive modeling engine for SecondBrain.
  *
  * Core ideas:
  *   - Forgetting curve: retention = exp(-t / stability)

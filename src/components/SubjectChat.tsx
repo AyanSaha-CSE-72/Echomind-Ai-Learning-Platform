@@ -11,10 +11,22 @@ import {
   Settings,
   Loader2,
 } from "lucide-react";
-import { EchoMindIcon } from "./echomind-icon";
+import { SecondBrainIcon } from "./secondbrain-icon";
 import { MarkdownRenderer } from "./markdown-renderer";
 import { cn } from "@/lib/utils";
-import { Subject, getSubjectDisplay } from "@/lib/promptAgent";
+
+// Types & Helpers previously imported from promptAgent
+export interface Subject {
+  id: string;
+  title: string;
+  description?: string;
+  color?: string;
+  [key: string]: any;
+}
+
+export function getSubjectDisplay(subject: Subject): string {
+  return subject?.title || "Subject";
+}
 
 export interface ChatMessage {
   role: "user" | "assistant";

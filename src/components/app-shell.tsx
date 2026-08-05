@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEcho, selectLevel } from "@/lib/store";
-import { EchoMindIcon } from "@/components/echomind-icon";
+import { SecondBrainIcon } from "@/components/secondbrain-icon";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -71,12 +71,12 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Link href="/dashboard" className="flex items-center gap-3 mb-8">
             <div className="relative">
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-cyan-400 flex items-center justify-center animate-glow">
-                <EchoMindIcon size={22} />
+                <SecondBrainIcon size={22} />
               </div>
               <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-violet-500/30 to-cyan-400/30 blur-md -z-10" />
             </div>
             <div>
-              <div className="font-semibold text-[15px] leading-none">EchoMind</div>
+              <div className="font-semibold text-[15px] leading-none">SecondBrain</div>
               <div className="text-[11px] text-ink-400 mt-1">Knowledge that talks back</div>
             </div>
           </Link>

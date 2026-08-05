@@ -9,7 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 /**
- * Persistence layer for EchoMind.
+ * Persistence layer for SecondBrain.
  *
  * The learner's universe is organized as:
  *   Collection (folder)  ──▶  Subject (topic area, e.g. "Organic Chemistry")

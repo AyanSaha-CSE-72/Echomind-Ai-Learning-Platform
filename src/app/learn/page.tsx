@@ -219,7 +219,7 @@ export default function LearnPage() {
 
                   {/* The actual clickable button */}
                   <label
-                    htmlFor="echomind-file-input"
+                    htmlFor="secondbrain-file-input"
                     className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 px-7 py-3 text-sm font-medium cursor-pointer hover:scale-105 transition-transform shadow-lg shadow-violet-500/30"
                   >
                     <FileImage className="w-4 h-4" />
@@ -228,7 +228,7 @@ export default function LearnPage() {
 
                   {/* Second hidden input for label binding */}
                   <input
-                    id="echomind-file-input"
+                    id="secondbrain-file-input"
                     ref={fileInputRef}
                     type="file"
                     accept={mode === "pdf" ? ".pdf,application/pdf" : "image/*"}

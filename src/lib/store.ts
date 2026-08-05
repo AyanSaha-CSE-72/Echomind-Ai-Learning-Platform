@@ -425,7 +425,7 @@ export const useEcho = create<EchoState>()(
       },
     }),
     {
-      name: "echomind-state-v3",
+      name: "secondbrain-state-v3",
       partialize: (s) => ({
         theme: s.theme,
         profile: s.profile,

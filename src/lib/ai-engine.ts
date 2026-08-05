@@ -1,7 +1,7 @@
 /**
  * Local Socratic AI engine.
  *
- * This is a rule-based cognitive mentor that emulates the EchoMind AI locally.
+ * This is a rule-based cognitive mentor that emulates the SecondBrain AI locally.
  * It never gives the full answer immediately — it probes, scaffolds, and
  * reveals understanding in stages. In production this layer sits in front of
  * an LLM with access to the learner's cognitive profile and knowledge graph.
