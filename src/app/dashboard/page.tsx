@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -43,6 +43,11 @@ export default function DashboardPage() {
   const completeMission = useEcho((s) => s.completeMission);
   const bumpStreak = useEcho((s) => s.bumpStreak);
   const level = selectLevel();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const forgetting = useMemo(() => predictForgetting(concepts, 3), [concepts]);
   const avgRetention = useMemo(() => {
@@ -238,10 +243,17 @@ export default function DashboardPage() {
               </div>
               <div className="mt-4">
                 <div className="h-2 rounded-full bg-white/5 overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 transition-all"
-                    style={{ width: `${level.progress * 100}%` }}
-                  />
+                  {mounted ? (
+                    <div
+                      className="h-full bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 transition-all"
+                      style={{ width: `${level.progress * 100}%` }}
+                    />
+                  ) : (
+                    <div
+                      className="h-full bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 transition-all"
+                      style={{ width: "0%" }}
+                    />
+                  )}
                 </div>
                 <div className="flex justify-between text-xs text-ink-400 mt-2">
                   <span>{profile.xp.toLocaleString()} XP</span>
@@ -262,10 +274,17 @@ export default function DashboardPage() {
                       <span className="text-ink-400">{bar.value}{bar.max === 90 ? "m" : "%"}</span>
                     </div>
                     <div className="h-1 rounded-full bg-white/5 overflow-hidden">
-                      <div
-                        className={`h-full bg-gradient-to-r ${bar.color}`}
-                        style={{ width: `${(bar.value / bar.max) * 100}%` }}
-                      />
+                      {mounted ? (
+                        <div
+                          className={`h-full bg-gradient-to-r ${bar.color}`}
+                          style={{ width: `${(bar.value / bar.max) * 100}%` }}
+                        />
+                      ) : (
+                        <div
+                          className={`h-full bg-gradient-to-r ${bar.color}`}
+                          style={{ width: "0%" }}
+                        />
+                      )}
                     </div>
                   </div>
                 ))}

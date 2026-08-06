@@ -61,7 +61,7 @@ const SUGGESTIONS = [
 export function SubjectChat({
   subject,
   apiKey,
-  model = "gemini-1.5-flash",
+  model = "gemini-2.5-flash",
   onSettingsClick,
   className,
 }: SubjectChatProps) {
@@ -176,7 +176,7 @@ export function SubjectChat({
             
             // Add helpful suggestions for 503 errors
             if (errorMessage.includes("503") || errorMessage.includes("high demand")) {
-              errorMessage += "\n\n💡 Try switching to 'gemini-1.5-flash' or 'gemini-1.5-pro' in Settings for better availability.";
+              errorMessage += "\n\n💡 Try switching to 'gemini-2.5-flash' or 'gemini-2.5-flash-lite' in Settings for better availability.";
             }
             
             setError(errorMessage);

@@ -70,47 +70,39 @@ export default function LearnPage() {
     setSelectedFile(f); setInput(f.name);
   };
 
-  const handleProcess = () => {
-    if (!input.trim()) return;
+  const handleProcess = async () => {
+    if (!input.trim() && !selectedFile) return;
     setProcessing(true);
-    setTimeout(() => {
-      const content: ProcessedContent = {
-        id: `learn-${Date.now()}`,
-        title:
-          mode === "youtube"
-            ? "Neural Networks Explained — 3Blue1Brown"
-            : mode === "url"
-            ? "The Transformer Architecture — Deep Dive"
-            : "Machine Learning Foundations",
-        kind: mode,
-        summary:
-          "This material covers the core mechanics of how machines learn from data. We move from the intuition of pattern matching to the mathematical machinery of optimization, showing how gradients guide weights toward better predictions. The key insight is that learning is just gradient descent on a loss surface, and deep networks learn hierarchical representations.",
-        keyIdeas: [
-          "Machine learning maps inputs to outputs via learned parameters",
-          "Loss functions quantify prediction error",
-          "Gradients tell us which direction reduces error",
-          "Deep networks learn hierarchical features layer by layer",
-          "Generalization requires regularization and sufficient data",
-        ],
-        flashcards: [
-          { q: "What is a loss function?", a: "A function that quantifies how wrong a model's predictions are." },
-          { q: "What do gradients tell us?", a: "The direction to adjust parameters to reduce error." },
-          { q: "Why do we need deep networks?", a: "To learn hierarchical representations — simple features compose into complex ones." },
-        ],
-        timeline: mode === "youtube" ? [
-          { time: "0:00", title: "The intuition of learning" },
-          { time: "2:40", title: "What is a neural network?" },
-          { time: "8:15", title: "Gradient descent visualized" },
-          { time: "15:30", title: "Backpropagation, step by step" },
-          { time: "22:00", title: "Why depth matters" },
-        ] : undefined,
-        concepts: ["ml", "neural", "backprop", "calculus"],
-      };
+    
+    try {
+      const formData = new FormData();
+      formData.append("mode", mode);
+      if (selectedFile) {
+        formData.append("file", selectedFile);
+      } else {
+        formData.append("url", input);
+      }
+
+      const response = await fetch("/api/learn", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to process content");
+      }
+
+      const content: ProcessedContent = await response.json();
       setResult(content);
-      setProcessing(false);
       addXp(120);
       content.concepts.forEach((id) => reinforceConcept(id, 0.8));
-    }, 2200);
+    } catch (error) {
+      console.error("Processing error:", error);
+      alert("Failed to process content: " + (error as Error).message);
+    } finally {
+      setProcessing(false);
+    }
   };
 
   return (

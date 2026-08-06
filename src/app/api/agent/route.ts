@@ -24,80 +24,108 @@ interface AgentResponse {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse<AgentResponse>> {
-  try {
-    const body: AgentRequest = await req.json();
-    const { subject, prompt, history, apiKey, model = "gemini-1.5-flash" } = body;
+  const body: AgentRequest = await req.json();
+  
+   // Use free-tier Gemini models
+   const { subject, prompt, history, apiKey, model } = body;
+   const defaultModel = "gemini-2.5-flash";
 
-    // Validate required fields
-    if (!prompt) {
-      return NextResponse.json(
-        { content: "", error: "Prompt is required" },
-        { status: 400 }
-      );
-    }
+   console.log("[DEBUG /api/agent] Incoming request:", {
+     model: model || defaultModel,
+     apiKeyPrefix: apiKey ? apiKey.substring(0, 10) + "..." : "MISSING",
+     promptLength: prompt?.length,
+     historyLength: history?.length,
+   });
 
-    if (!apiKey) {
-      return NextResponse.json(
-        { content: "", error: "API key is required" },
-        { status: 400 }
-      );
-    }
-
-    // Generate dynamic system prompt based on subject
-    const systemPrompt = subject 
-      ? generateSystemPrompt(subject)
-      : generateDefaultSystemPrompt();
-
-    // Initialize Google Generative AI with low temperature for strict adherence
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const generativeModel = genAI.getGenerativeModel({
-      model,
-      systemInstruction: systemPrompt,
-      generationConfig: {
-        temperature: 0.2, // Low temperature to prevent unprompted topic shifts
-        topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 8192,
-      },
-    });
-
-    // Sanitize and filter chat history - STRICT ISOLATION
-    // Only include messages that are relevant to the current subject
-    const sanitizedHistory = history.map((msg) => ({
-      role: msg.role === "assistant" ? "model" : "user",
-      parts: [{ text: msg.content }],
-    }));
-
-    // Generate response with sanitized history
-    const chat = generativeModel.startChat({
-      history: sanitizedHistory,
-    });
-
-    const result = await chat.sendMessage(prompt);
-    const response = result.response;
-    const content = response.text();
-
-    return NextResponse.json({ content });
-
-  } catch (error: any) {
-    console.error("AI Agent API error:", error);
-
-    // Parse common errors and provide helpful messages
-    let userMessage = error.message || "Failed to get AI response";
-
-    if (userMessage.includes("API key not valid") || userMessage.includes("API_KEY_INVALID")) {
-      userMessage = "API key is invalid. Please check your API key in Settings.";
-    } else if (userMessage.includes("quota") || userMessage.includes("RATE_LIMIT")) {
-      userMessage = "You've hit the rate limit. Wait a moment and try again.";
-    } else if (userMessage.includes("model") && userMessage.includes("not found")) {
-      userMessage = "This model isn't available. Try selecting a different model in Settings.";
-    } else if (userMessage.includes("billing") || userMessage.includes("payment")) {
-      userMessage = "This provider requires billing info. Try a free-tier model instead.";
-    }
-
+  if (!prompt) {
     return NextResponse.json(
-      { content: "", error: userMessage },
-      { status: 500 }
+      { content: "", error: "Prompt is required" },
+      { status: 400 }
     );
   }
+
+  if (!apiKey) {
+    return NextResponse.json(
+      { content: "", error: "API key is required" },
+      { status: 400 }
+    );
+  }
+
+  const systemPrompt = subject
+    ? generateSystemPrompt(subject)
+    : generateDefaultSystemPrompt();
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+
+   const modelsToTry = [model || defaultModel, "gemini-2.5-flash-lite"];
+  let lastError: any = null;
+
+  for (const currentModel of modelsToTry) {
+    try {
+      console.log(`[DEBUG] Trying model: ${currentModel}`);
+
+      const generativeModel = genAI.getGenerativeModel({
+        model: currentModel,
+        systemInstruction: systemPrompt,
+        generationConfig: {
+          temperature: 0.2,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 8192,
+        },
+      });
+
+      const sanitizedHistory = history.map((msg) => ({
+        role: msg.role === "assistant" ? "model" : "user",
+        parts: [{ text: msg.content }],
+      }));
+
+      const chat = generativeModel.startChat({
+        history: sanitizedHistory,
+      });
+
+      const result = await chat.sendMessage(prompt);
+      const content = result.response.text();
+
+      console.log(`[DEBUG] Success with model: ${currentModel}`);
+      return NextResponse.json({ content });
+    } catch (error: any) {
+      console.error(`[DEBUG] Error with model ${currentModel}:`, error.message);
+      lastError = error;
+    }
+  }
+
+  // All models failed
+  console.error("[DEBUG] All models failed:", lastError);
+
+  let userMessage = lastError?.message || "Failed to get AI response";
+
+  if (
+    userMessage.includes("API key not valid") ||
+    userMessage.includes("API_KEY_INVALID")
+  ) {
+    userMessage = "API key is invalid. Please check your API key in Settings.";
+  } else if (
+    userMessage.includes("quota") ||
+    userMessage.includes("RATE_LIMIT") ||
+    userMessage.includes("Resource has been exhausted")
+  ) {
+    userMessage = "You've hit the free rate limit. Wait a few minutes and try again.";
+  } else if (
+    userMessage.includes("model") &&
+    (userMessage.includes("not found") || userMessage.includes("not available"))
+  ) {
+    userMessage = "This model isn't available. Please try again or check your API key.";
+  } else if (
+    userMessage.includes("billing") ||
+    userMessage.includes("payment") ||
+    userMessage.includes("PERMISSION_DENIED")
+  ) {
+    userMessage = "API key issue. Please check your API key in Settings.";
+  }
+
+  return NextResponse.json(
+    { content: "", error: userMessage },
+    { status: 500 }
+  );
 }

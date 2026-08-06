@@ -64,13 +64,8 @@ const PROVIDERS: {
     getApiKeyUrl: "https://aistudio.google.com/app/apikey",
     keyPrefix: "AIza",
     models: [
-      { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", free: true, recommended: true },
-      { id: "gemini-3-flash", name: "Gemini 3 Flash", free: true },
-      { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", free: true },
-      { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash-Lite", free: true },
-      { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash", free: true },
-      { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", free: true },
-      { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", free: false },
+       { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", free: true, recommended: true },
+       { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash Lite", free: true },
     ],
   },
 ];

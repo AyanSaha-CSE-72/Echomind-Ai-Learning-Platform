@@ -119,6 +119,7 @@ interface EchoState {
   clearActiveApiKey: () => void;
   updateApiKey: (id: string, data: Partial<ApiKey>) => void;
   getActiveApiKey: () => ApiKey | null;
+  migrateApiKeys: () => void;
 }
 
 const defaultProfile: LearnerProfile = {
@@ -385,14 +386,41 @@ export const useEcho = create<EchoState>()(
 
       // ---- API Keys ----
       apiKeys: [],
+      
+      // Force migrate existing API keys to confirmed free models
+      migrateApiKeys: () => {
+        set((s) => {
+           const validGeminiModels = ["gemini-2.5-flash", "gemini-2.5-flash-lite"];
+           return {
+             apiKeys: s.apiKeys.map((key) => {
+               if (key.provider === "gemini" && key.model && !validGeminiModels.includes(key.model)) {
+                 console.log(`[MIGRATION] Fixing invalid model ${key.model} -> gemini-2.5-flash`);
+                 return { ...key, model: "gemini-2.5-flash" };
+               }
+               return key;
+             }),
+           };
+        });
+      },
+      
       addApiKey: (data) => {
         const id = `key-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+        
+        // Validate and normalize model for Gemini provider
+         let normalizedModel = data.model;
+         if (data.provider === "gemini" && data.model) {
+           const validGeminiModels = ["gemini-2.5-flash", "gemini-2.5-flash-lite"];
+           if (!validGeminiModels.includes(data.model)) {
+             normalizedModel = "gemini-2.5-flash";
+           }
+         }
+        
         set((s) => {
           // If this is the first key, make it active
           const isActive = s.apiKeys.length === 0;
           const newKeys = s.apiKeys.map((k) => ({ ...k, isActive: false }));
           return {
-            apiKeys: [...newKeys, { ...data, id, createdAt: Date.now(), isActive }],
+            apiKeys: [...newKeys, { ...data, id, createdAt: Date.now(), isActive, model: normalizedModel }],
           };
         });
         return id;
@@ -416,9 +444,22 @@ export const useEcho = create<EchoState>()(
           apiKeys: s.apiKeys.map((k) => ({ ...k, isActive: false })),
         })),
       updateApiKey: (id, data) =>
-        set((s) => ({
-          apiKeys: s.apiKeys.map((k) => (k.id === id ? { ...k, ...data } : k)),
-        })),
+        set((s) => {
+          // Validate and normalize model for Gemini provider
+          let normalizedModel = data.model;
+          const existingKey = s.apiKeys.find((k) => k.id === id);
+          
+           if (existingKey?.provider === "gemini" && data.model) {
+             const validGeminiModels = ["gemini-2.5-flash", "gemini-2.5-flash-lite"];
+             if (!validGeminiModels.includes(data.model)) {
+               normalizedModel = "gemini-2.5-flash";
+             }
+           }
+          
+          return {
+            apiKeys: s.apiKeys.map((k) => (k.id === id ? { ...k, ...data, model: normalizedModel } : k)),
+          };
+        }),
       getActiveApiKey: () => {
         const state = useEcho.getState();
         return state.apiKeys.find((k) => k.isActive) ?? null;
